@@ -1,15 +1,9 @@
 import os
 import re
-import html2text
+#import html2text
 from bs4 import BeautifulSoup
 
-text_maker = html2text.HTML2Text()
-
-def remove_html_tags(string):
-    #return BeautifulSoup(string, "lxml").text
-    return text_maker.handle(string)
-
-def traverse_wp_articles(root_dir):
+def traverse_wp_articles_dir(root_dir):
     for root, dirs, files in os.walk(root_dir):
         #import pdb; pdb.set_trace()
         for file in files:
@@ -18,9 +12,6 @@ def traverse_wp_articles(root_dir):
             if filename.endswith(".html") and not re.match(r'^\d+\.html$', filename) and not filename=='.html':
                 file_path = os.path.join(root, file)
                 yield file_path
-
-
-mr_endtext_regexp = re.compile('\nThe post.*appeared first on Marginal REVOLUTION')
 
 class WP_Article():
     def __init__(self, filename):
@@ -55,7 +46,7 @@ class WP_Article():
 root_dir = '/Users/jvm/Development/web_crawling/marginal_revolution/marginalrevolution.com/marginalrevolution'
 
 articles = []
-for filename in traverse_wp_articles(root_dir):
+for filename in traverse_wp_articles_dir(root_dir):
     article = WP_Article(filename)
     articles.append(article)
 
