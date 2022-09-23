@@ -14,43 +14,44 @@ def identify_tensor_device():
 
 device = identify_tensor_device()
 
-# Load the model
-#model = sentence_transformers.SentenceTransformer('msmarco-distilbert-base-v4', device=device)
-model = sentence_transformers.SentenceTransformer('all-MiniLM-L12-v2', device=device)
-
-
-
-# Load the dataset
-df = pd.read_csv("output/mr_archive.csv")
-
 # Concatenate title with text
 def concatenate_title_text(row):
     return f'''Title: {row["title"]}
     Tags: {', '.join(row["tags"])}
     Content: {row["content"]}'''
 
-df["concatenated"] = df.apply(concatenate_title_text, axis=1)
 
-# Fetch embeddings for corpus
-list_to_generate = df["concatenated"].tolist()
-embeddings = model.encode(list_to_generate, show_progress_bar=True)
+if __name__ == '__main__':
+    # Load the model
+    #model = sentence_transformers.SentenceTransformer('msmarco-distilbert-base-v4', device=device)
+    model = sentence_transformers.SentenceTransformer('all-MiniLM-L12-v2', device=device)
 
-print('Embedding shape:', embeddings.shape)
-
-def test_consistency(first_item_text, embeddings):
-    embeddings_test = model.encode([first_item_text])
-    cos_sims = sentence_transformers.util.cos_sim(embeddings, embeddings_test)
-    
-    try:
-        assert np.argmax(cos_sims) == 0, "First item wasn't the best match with itself"
-    except AssertionError:
-        print(cos_sims)
+    # Load the dataset
+    df = pd.read_csv("output/mr_archive.csv")
 
 
-test_consistency(df["concatenated"].head(1)[0], embeddings)
-print('Consitency check passed')
+    df["concatenated"] = df.apply(concatenate_title_text, axis=1)
+
+    # Fetch embeddings for corpus
+    list_to_generate = df["concatenated"].tolist()
+    embeddings = model.encode(list_to_generate, show_progress_bar=True)
+
+    print('Embedding shape:', embeddings.shape)
+
+    def test_consistency(first_item_text, embeddings):
+        embeddings_test = model.encode([first_item_text])
+        cos_sims = sentence_transformers.util.cos_sim(embeddings, embeddings_test)
+        
+        try:
+            assert np.argmax(cos_sims) == 0, "First item wasn't the best match with itself"
+        except AssertionError:
+            print(cos_sims)
 
 
-# Save the embeddings
-torch.save(embeddings, "output/mr_embeddings.pt")
+    test_consistency(df["concatenated"].head(1)[0], embeddings)
+    print('Consistency check passed')
+
+
+    # Save the embeddings
+    torch.save(embeddings, "output/mr_embeddings.pt")
 
