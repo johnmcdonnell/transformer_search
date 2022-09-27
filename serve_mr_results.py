@@ -6,8 +6,9 @@ import torch
 stub = modal.Stub()
 image = modal.Image.debian_slim().pip_install(["torch", "pandas", "sentence_transformers"])
 
-# TODO figure out GPUs (low priority)
-
+# TODO Cache the model so we don't have to load it on each call
+# TODO Return properly formatted JSON
+# TODO Figure out GPUs (low priority)
 
 # Identify output directory for passing into modal
 local_dir = os.path.dirname(os.path.realpath(__file__))
