@@ -1,7 +1,26 @@
 import os
 import modal
 import torch
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+
 #import sentence_transformers
+
+web_app = FastAPI()
+
+origins = [
+    "http://localhost",
+    "http://localhost:3000",
+]
+
+web_app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 stub = modal.Stub()
 image = modal.Image.debian_slim().pip_install(["torch", "pandas", "sentence_transformers"])
@@ -15,9 +34,7 @@ local_dir = os.path.dirname(os.path.realpath(__file__))
 local_output_dir = os.path.join(local_dir, "output")
 remote_output_dir = "/root/output"
 
-@stub.webhook(
-        image=image,
-        mounts=[modal.Mount(local_dir=local_output_dir, remote_dir=remote_output_dir)])
+@web_app.get("/search")
 def serve_mr_search_results(query_string):
     import pandas as pd
     import sentence_transformers
@@ -60,7 +77,13 @@ def serve_mr_search_results(query_string):
         blob = hit_to_json(i+1, results.values[i], hit)
         hits_to_return.append(blob)
 
-    return hits_to_return
+    return {'results': hits_to_return}
+
+@stub.asgi(image=image,
+        mounts=[modal.Mount(local_dir=local_output_dir, remote_dir=remote_output_dir)])
+def fastapi_app():
+    return web_app
+
 
 if __name__ == "__main__":
     stub.serve()
