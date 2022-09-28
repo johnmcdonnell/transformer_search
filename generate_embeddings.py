@@ -25,6 +25,7 @@ if __name__ == '__main__':
     # Load the model
     #model = sentence_transformers.SentenceTransformer('msmarco-distilbert-base-v4', device=device)
     model = sentence_transformers.SentenceTransformer('all-MiniLM-L12-v2', device=device)
+    model.save('output/MiniLM-L12-v2')
 
     # Load the dataset
     df = pd.read_csv("output/mr_archive.csv")
