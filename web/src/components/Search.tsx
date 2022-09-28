@@ -13,6 +13,7 @@ type SearchProps = {
         result_number: number,
         score: number,
         title: string,
+        author: string,
         date: string,
         content: string,
         link: string,
@@ -38,9 +39,15 @@ function render_results(results: Array<SearchProps['results'][0]>) {
 function SearchResult(props: {'result': SearchProps['results'][0]}) {
     return (
         <li key={props.result.result_number}>
-            <Paper>
+            <Paper elevation={3} sx={{
+                m: '1em',
+                p: '1em',
+            }}>
                 <Typography variant="h6" gutterBottom component="div">
                     {props.result.title}
+                </Typography>
+                <Typography variant="body2" gutterBottom>
+                    <strong>Author</strong> {props.result.author}
                 </Typography>
                 <Typography variant="body2" gutterBottom>
                 <Moment date={props.result.date} format="YYYY-MM-DD"></Moment> (<Moment fromNow>{props.result.date}</Moment>)

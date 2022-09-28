@@ -2,7 +2,7 @@ import React from 'react'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
-import { IconButton, Box, Menu, MenuItem, Button} from '@mui/material'
+import { IconButton, Box, Menu, MenuItem, Button, Container} from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 
 import Search from './components/Search'
@@ -66,8 +66,10 @@ function App() {
             </Toolbar>
           </AppBar>
         </Box> 
-        { getSection(currentSection)}
       </header>
+      <Container maxWidth="md">
+          { getSection(currentSection)}
+        </Container>
     </div>
   );
 }
