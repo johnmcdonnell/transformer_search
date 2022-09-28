@@ -43,7 +43,8 @@ def serve_mr_search_results(query_string):
     top_n_results = 5
 
     # Fetch assets
-    model = sentence_transformers.SentenceTransformer('all-MiniLM-L12-v2')
+    #model = sentence_transformers.SentenceTransformer('all-MiniLM-L12-v2')
+    model = sentence_transformers.SentenceTransformer(os.path.join(remote_output_dir, 'MiniLM-L12-v2'))
     embedding_file = os.path.join(remote_output_dir, "mr_embeddings.pt")
     archive_file = os.path.join(remote_output_dir, "mr_archive.csv")
     corpus_embeddings = torch.tensor(torch.load(embedding_file))
