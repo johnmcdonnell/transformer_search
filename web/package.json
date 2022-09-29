@@ -1,6 +1,6 @@
 {
   "name": "semantic-search-demo",
-  "homepage": "https://johnmcdonnell.github.io/semantic-search-demo",
+  "homepage": "https://johnmcdonnell.github.io/transformer_search",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
