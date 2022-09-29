@@ -1,15 +1,15 @@
 {
-  "main.css": "/semantic-search-demo/static/css/main.06c18569.chunk.css",
-  "main.js": "/semantic-search-demo/static/js/main.226ed02d.chunk.js",
-  "main.js.map": "/semantic-search-demo/static/js/main.226ed02d.chunk.js.map",
-  "runtime~main.js": "/semantic-search-demo/static/js/runtime~main.379913a6.js",
-  "runtime~main.js.map": "/semantic-search-demo/static/js/runtime~main.379913a6.js.map",
-  "static/js/2.30335405.chunk.js": "/semantic-search-demo/static/js/2.30335405.chunk.js",
-  "static/js/2.30335405.chunk.js.map": "/semantic-search-demo/static/js/2.30335405.chunk.js.map",
-  "static/js/3.3eaac860.chunk.js": "/semantic-search-demo/static/js/3.3eaac860.chunk.js",
-  "static/js/3.3eaac860.chunk.js.map": "/semantic-search-demo/static/js/3.3eaac860.chunk.js.map",
+  "main.css": "/semantic-search-demo/static/css/main.dfe8c2b3.chunk.css",
+  "main.js": "/semantic-search-demo/static/js/main.979dbe8c.chunk.js",
+  "main.js.map": "/semantic-search-demo/static/js/main.979dbe8c.chunk.js.map",
+  "static/js/1.11c4aba4.chunk.js": "/semantic-search-demo/static/js/1.11c4aba4.chunk.js",
+  "static/js/1.11c4aba4.chunk.js.map": "/semantic-search-demo/static/js/1.11c4aba4.chunk.js.map",
+  "static/js/2.6d5f4812.chunk.js": "/semantic-search-demo/static/js/2.6d5f4812.chunk.js",
+  "static/js/2.6d5f4812.chunk.js.map": "/semantic-search-demo/static/js/2.6d5f4812.chunk.js.map",
+  "runtime~main.js": "/semantic-search-demo/static/js/runtime~main.4d2361e6.js",
+  "runtime~main.js.map": "/semantic-search-demo/static/js/runtime~main.4d2361e6.js.map",
+  "static/css/main.dfe8c2b3.chunk.css.map": "/semantic-search-demo/static/css/main.dfe8c2b3.chunk.css.map",
   "index.html": "/semantic-search-demo/index.html",
-  "precache-manifest.4bef59572c3f8709f5d645c8ac9b3071.js": "/semantic-search-demo/precache-manifest.4bef59572c3f8709f5d645c8ac9b3071.js",
-  "service-worker.js": "/semantic-search-demo/service-worker.js",
-  "static/css/main.06c18569.chunk.css.map": "/semantic-search-demo/static/css/main.06c18569.chunk.css.map"
+  "precache-manifest.d8ad59531f91676ffb6b9709956012dc.js": "/semantic-search-demo/precache-manifest.d8ad59531f91676ffb6b9709956012dc.js",
+  "service-worker.js": "/semantic-search-demo/service-worker.js"
 }
