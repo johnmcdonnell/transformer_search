@@ -79,7 +79,7 @@ def generate_query_for_gpt3(hits, query):
     return article_prompt
 
 def summarize_results(hits, query):
-    gpt3_temperature = 0.5
+    gpt3_temperature = 0
     
     import openai
     openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -100,7 +100,6 @@ def serve_mr_search_results(query_string):
     top_n_results = 5
 
     # Fetch assets
-    #model = sentence_transformers.SentenceTransformer('all-MiniLM-L12-v2')
     model = sentence_transformers.SentenceTransformer(os.path.join(remote_output_dir, 'MiniLM-L12-v2'))
     embedding_file = os.path.join(remote_output_dir, "mr_embeddings.pt")
     archive_file = os.path.join(remote_output_dir, "mr_archive.csv")
@@ -111,7 +110,6 @@ def serve_mr_search_results(query_string):
         query_embedding = model.encode(query, convert_to_tensor=True)
         cos_scores = sentence_transformers.util.cos_sim(query_embedding, corpus_embeddings)[0]
         top_results = torch.topk(cos_scores, k=top_n_results)
-        print(top_results)
         
         return top_results
 
@@ -136,6 +134,8 @@ def serve_mr_search_results(query_string):
         blob = hit_to_json(i+1, results.values[i], hit)
         hits_to_return.append(blob)
    
+    # Using a placeholder to spare my OpenAI balance
+
     summary = summarize_results(hits_to_return, query_string)
     
     return {'results': hits_to_return,
