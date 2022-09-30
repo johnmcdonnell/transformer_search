@@ -54,7 +54,7 @@ def generate_query_for_gpt3(hits, query):
     """
 
     footer = f"""
-    In detail, what insights do these articles have about the query, '{query}'?"""
+    Based on the articles, what are some insights and surprising facts about '{query}'? Respond in detail."""
     
     tokens_so_far = get_token_count(article_prompt, tokenizer) + get_token_count(footer, tokenizer)
     articles_so_far = 0

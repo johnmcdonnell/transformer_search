@@ -48,6 +48,7 @@ class Results extends React.Component<{results: SearchProps['results']}> {
 }
 
 class Summary extends React.Component<{summary: string}> {
+
     render() {
         if (this.props.summary.length > 0) {
             return (
@@ -56,14 +57,14 @@ class Summary extends React.Component<{summary: string}> {
                     variant="h3"
                     color='text.secondary'
                 >
-                        Summary
-                </Typography>
-                <Paper sx={{backgroundColor: 'secondary.main', 'border-radius': '10px', m: '0 auto', p: '1em', width: '80%'}}>
-
-                    <Typography variant="body2" sx={{'text-align': 'justify'}}>
-                        {this.props.summary}
+                    🤖Summary🤖
                     </Typography>
-                </Paper>
+                    <Paper sx={{backgroundColor: 'secondary.main', 'border-radius': '10px', m: '0 auto', p: '1em', width: '80%'}}>
+
+                        <Typography variant="body2" sx={{'text-align': 'justify', 'whiteSpace': 'pre-line'}}>
+                            {this.props.summary}
+                        </Typography>
+                    </Paper>
                 </Container>
             )
         } else {
