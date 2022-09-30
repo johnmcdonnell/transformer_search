@@ -1,6 +1,7 @@
 import os
-import modal
+import logging
 import torch
+import modal
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -12,6 +13,8 @@ origins = [
     "https://master.djhebrb3aqcmp.amplifyapp.com"
 ]
 
+gpt3_token_limit = 3200 # TODO check the actual limit
+
 web_app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -22,11 +25,71 @@ web_app.add_middleware(
 
 
 stub = modal.Stub()
-image = modal.Image.debian_slim().pip_install(["torch", "pandas", "sentence_transformers"])
+image = modal.Image.debian_slim().pip_install(["torch", "pandas", "sentence_transformers", "openai"])
 
 # Identify output directory for passing into modal
 local_output_dir = os.path.join(os.getcwd(), "output")
 remote_output_dir = "/root/output"
+
+def get_token_count(text, tokenizer):
+    import numpy as np
+    return np.sum(tokenizer(text)['attention_mask'])
+
+def format_hit_for_gpt3(hit):
+    return f"""Title: {hit["title"]}
+    Tags: {hit["tags"]}
+    Content: {hit["content"]}
+    """
+def generate_query_for_gpt3(hits, query):
+    import pickle
+    token_cutoff = 3200 # TODO check the actual limit
+    
+    with open('output/gpt2_tokenizer.pkl', 'rb') as f:
+        tokenizer = pickle.load(f)
+    
+    hits_encoded = [format_hit_for_gpt3(hit) for hit in hits]
+    article_prompt = f"""A user queried: '{query}'
+    
+    Please read the following articles and respond truthfully.
+    
+    """
+
+    footer = f"""
+    In detail, what insights do these articles have about the query, '{query}'?"""
+    
+    tokens_so_far = get_token_count(article_prompt, tokenizer) + get_token_count(footer, tokenizer)
+    articles_so_far = 0
+    for i, hit in enumerate(hits_encoded):
+        hit_token_count = get_token_count(hit, tokenizer)
+        if tokens_so_far + hit_token_count < gpt3_token_limit:
+            article_prompt += f"""{hit}"""
+            tokens_so_far += hit_token_count
+            articles_so_far += 1
+        elif articles_so_far == 0:
+            logging.warn("Haven't yet found an article over the token limit")
+            continue
+        else:
+            logging.warn(f"Articles exceeded token limit, could only include {i} articles")
+            break
+    if articles_so_far > 0: 
+        logging.warn("None of the articles were within GPT3's token limit.")
+        return ""
+    
+    article_prompt += footer
+    return article_prompt
+
+def summarize_results(hits, query):
+    gpt3_temperature = 0.5
+    
+    import openai
+    openai.api_key = os.getenv("OPENAI_API_KEY")
+    
+    gpt3_prompt = generate_query_for_gpt3(hits, query)
+    response = openai.Completion.create(model="text-davinci-002", prompt=gpt3_prompt, temperature=gpt3_temperature, max_tokens=500)
+    logging.debug(response)
+    
+    return response['choices'][0]['text'].strip()
+    
 
 @web_app.get("/search")
 def serve_mr_search_results(query_string):
@@ -62,6 +125,7 @@ def serve_mr_search_results(query_string):
             'author': hit["author"],
             'date': hit["publish_date"],
             'content': hit["content"],
+            'tags': hit["tags"],
             'link': hit["link"]
         }
         return blob
@@ -71,11 +135,15 @@ def serve_mr_search_results(query_string):
         hit = mr_archive.iloc[results.indices[i].item()]
         blob = hit_to_json(i+1, results.values[i], hit)
         hits_to_return.append(blob)
-
-    return {'results': hits_to_return}
+   
+    summary = summarize_results(hits_to_return, query_string)
+    
+    return {'results': hits_to_return,
+            'summary': summary}
 
 @stub.asgi(image=image,
-        mounts=[modal.Mount(local_dir=local_output_dir, remote_dir=remote_output_dir)])
+        mounts=[modal.Mount(local_dir=local_output_dir, remote_dir=remote_output_dir)],
+        secret=modal.Secret.from_name("OpenAI"))
 def fastapi_app():
     return web_app
 
