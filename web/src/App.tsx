@@ -1,4 +1,6 @@
 import React from 'react'
+import './App.css';
+
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
@@ -40,36 +42,18 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <Box sx={{flexGrow: 1}}>
-          <AppBar position="static" >
-            <Toolbar>
-              <IconButton edge="start" style={styles.menuButton} color='inherit' disabled>
-                  <MenuIcon />
-              </IconButton>
-              <Box sx={{display:'flex', flexDirection:'row', }}>
-                  {pages.map((page) => (
-                      <Button
-                          key={page}
-                          href={`/${page}`}
-                          variant="contained"
-                          disabled={currentSection == page}
-                          sx={{display:'flex', alignItems:'center', border:1, m: 1 } }
-                          onClick={(e) => handleButtonClick(e, page)}
-                      >
-                          {page}
-                      </Button>
-                  ))}
-              </Box>
-
-            </Toolbar>
-          </AppBar>
-        </Box> 
-      </header>
-      <Container maxWidth="md">
+    <div className="App" >
+      <Container maxWidth="md" >
           { getSection(currentSection)}
+          <Typography
+            color="text.secondary"
+            sx={{'m': '2em'}}
+            >
+                        The Greek word ἐπιστήμη (epistēmē) was used by ancient philosophers to refer to a principle system of understanding. It is the root of the word epistemology.
+          </Typography>     
+
         </Container>
+
     </div>
   );
 }

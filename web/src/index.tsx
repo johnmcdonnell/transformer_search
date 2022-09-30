@@ -13,18 +13,22 @@ const root = ReactDOM.createRoot(
 );
 
 const theme = createTheme({
-  
   palette: { 
     primary: {
-      main: '#556cd6',
+      main: '#333',
       },
     secondary: {
-      main: '#19857b',
+      main: '#eee',
       },
     error: {  
       main: '#f44336',
     },
+    text: {
+      primary: '#333',
+      secondary: '#fff',
+    }
   },
+
 });
 
 root.render(
