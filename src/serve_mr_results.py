@@ -4,13 +4,12 @@ import torch
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
-#import sentence_transformers
-
 web_app = FastAPI()
 
 origins = [
     "http://localhost",
     "http://localhost:3000",
+    "https://master.djhebrb3aqcmp.amplifyapp.com"
 ]
 
 web_app.add_middleware(
@@ -25,13 +24,8 @@ web_app.add_middleware(
 stub = modal.Stub()
 image = modal.Image.debian_slim().pip_install(["torch", "pandas", "sentence_transformers"])
 
-# TODO Cache the model so we don't have to load it on each call
-# TODO Return properly formatted JSON
-# TODO Figure out GPUs (low priority)
-
 # Identify output directory for passing into modal
-local_dir = os.path.dirname(os.path.realpath(__file__))
-local_output_dir = os.path.join(local_dir, "output")
+local_output_dir = os.path.join(os.getcwd(), "output")
 remote_output_dir = "/root/output"
 
 @web_app.get("/search")
