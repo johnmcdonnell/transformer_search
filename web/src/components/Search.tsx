@@ -155,6 +155,7 @@ class Search extends React.Component<{}, SearchProps> {
                         sx={{backgroundColor: 'secondary.main', m: '1em', width: '60%', color: 'text.primary'}}
                     />
                     <Button
+                        type="submit"
                         variant="contained"
                         disabled={is_loading}
                         onClick={() => console.log("search")}
