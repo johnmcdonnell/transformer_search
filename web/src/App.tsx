@@ -45,12 +45,6 @@ function App() {
     <div className="App" >
       <Container maxWidth="md" >
           { getSection(currentSection)}
-          <Typography
-            color="text.secondary"
-            sx={{'m': '2em'}}
-            >
-                        The Greek word ἐπιστήμη (epistēmē) was used by ancient philosophers to refer to a system of understanding. It is the root of the word epistemology.
-          </Typography>     
 
         </Container>
 

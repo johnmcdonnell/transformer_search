@@ -29,12 +29,13 @@ class Results extends React.Component<{results: SearchProps['results']}> {
         if (this.props.results.length > 0) {
 
             return (
-                <Container  >
+                <Container sx={{margin: '2em'}}
+                >
                     <Typography
                         variant="h3"
                         color='text.secondary'
                     >
-                            Hits
+                        Hits
                     </Typography>
                     <List sx={{backgroundColor: 'secondary.main', 'borderRadius': '10px'}}>
                         {this.props.results.map((result) => <SearchResult result={result} />)}
@@ -134,11 +135,14 @@ class Search extends React.Component<{}, SearchProps> {
 
         return (
             <div>
-                <Typography variant="h1" color="text.secondary">
-                    Episteme
+                <Typography
+                    variant="h1"
+                    color="text.secondary"
+                    sx = {{ fontFamily: 'Roboto Slab'}} >
+                    Hunch
                 </Typography>   
                 <Typography variant="subtitle1" color="text.secondary">
-                    Semantic search, currently indexing the Marginal Revolution blog.
+                    AI-powered semantic search, currently indexing the Marginal Revolution blog.
                 </Typography>   
 
                 <form 
@@ -151,7 +155,7 @@ class Search extends React.Component<{}, SearchProps> {
                         placeholder="Search"
                         onChange={(e) => this.setSearch(e.target.value)}
                         autoFocus={true}
-                        sx={{backgroundColor: 'secondary.main', m: '1em', width: '60%', color: 'text.primary'}}
+                        sx={{backgroundColor: 'secondary.main', m: '1em', p: '.5em', width: '60%', color: 'text.primary', 'borderRadius': '1em'}}
                     />
                     <Button
                         type="submit"
