@@ -162,9 +162,7 @@ class Search extends React.Component<{}, SearchProps> {
                     </Button>
                 </form>
                 <Summary summary={this.state.summary} />
-                <Results
-                    results={this.state.results}
-                />
+                <Results results={this.state.results} />
             </div>
         )   
     
