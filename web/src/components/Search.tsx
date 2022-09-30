@@ -36,7 +36,7 @@ class Results extends React.Component<{results: SearchProps['results']}> {
                     >
                             Hits
                     </Typography>
-                    <List sx={{backgroundColor: 'secondary.main', 'border-radius': '10px'}}>
+                    <List sx={{backgroundColor: 'secondary.main', 'borderRadius': '10px'}}>
                         {this.props.results.map((result) => <SearchResult result={result} />)}
                     </List>
                 </Container>
@@ -59,9 +59,8 @@ class Summary extends React.Component<{summary: string}> {
                 >
                     🤖Summary🤖
                     </Typography>
-                    <Paper sx={{backgroundColor: 'secondary.main', 'border-radius': '10px', m: '0 auto', p: '1em', width: '80%'}}>
-
-                        <Typography variant="body2" sx={{'text-align': 'justify', 'whiteSpace': 'pre-line'}}>
+                    <Paper sx={{backgroundColor: 'secondary.main', 'borderRadius': '10px', m: '0 auto', p: '1em', width: '80%'}}>
+                        <Typography variant="body2" sx={{'textAlign': 'justify', 'whiteSpace': 'pre-line'}}>
                             {this.props.summary}
                         </Typography>
                     </Paper>
@@ -158,7 +157,6 @@ class Search extends React.Component<{}, SearchProps> {
                         type="submit"
                         variant="contained"
                         disabled={is_loading}
-                        onClick={() => console.log("search")}
                     >
                         {is_loading ? 'Loading…' : 'Semantic Search' }
                     </Button>
