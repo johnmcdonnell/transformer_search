@@ -42,7 +42,6 @@ def format_hit_for_gpt3(hit):
     """
 def generate_query_for_gpt3(hits, query):
     import pickle
-    token_cutoff = 3200 # TODO check the actual limit
     
     with open('output/gpt2_tokenizer.pkl', 'rb') as f:
         tokenizer = pickle.load(f)
@@ -71,7 +70,7 @@ def generate_query_for_gpt3(hits, query):
         else:
             logging.warn(f"Articles exceeded token limit, could only include {i} articles")
             break
-    if articles_so_far > 0: 
+    if articles_so_far == 0: 
         logging.warn("None of the articles were within GPT3's token limit.")
         return ""
     
