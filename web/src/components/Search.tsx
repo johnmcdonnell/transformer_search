@@ -75,7 +75,7 @@ class Search extends React.Component<{}, SearchProps> {
 
     search() {
         this.setState({'loading': true})
-        const results = fetch(`https://johnmcdonnell-icknage.modal.run/search?query_string=${this.state.query}`)
+        const results = fetch(`https://johnmcdonnell-transformer-search-backend-fastapi-app.modal.run/search?query_string=${this.state.query}`)
             .then(response => response.json())
             .then(data => {
                 this.setState({results: data['results'],
