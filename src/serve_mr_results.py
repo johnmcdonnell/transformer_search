@@ -85,10 +85,13 @@ def summarize_results(hits, query):
     openai.api_key = os.getenv("OPENAI_API_KEY")
     
     gpt3_prompt = generate_query_for_gpt3(hits, query)
-    response = openai.Completion.create(model="text-davinci-002", prompt=gpt3_prompt, temperature=gpt3_temperature, max_tokens=500)
-    logging.debug(response)
-    
-    return response['choices'][0]['text'].strip()
+    if gpt3_prompt:
+        response = openai.Completion.create(model="text-davinci-002", prompt=gpt3_prompt, temperature=gpt3_temperature, max_tokens=500)
+        logging.debug(response)
+        
+        return response['choices'][0]['text'].strip()
+    else:
+        return ""
     
 
 @web_app.get("/search")
