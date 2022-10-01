@@ -8,9 +8,10 @@ from fastapi.middleware.cors import CORSMiddleware
 web_app = FastAPI()
 
 origins = [
-    "http://localhost",
     "http://localhost:3000",
-    "https://master.djhebrb3aqcmp.amplifyapp.com"
+    "https://master.djhebrb3aqcmp.amplifyapp.com",
+    "https://vibecheck.network/",
+    "https://www.vibecheck.network/"
 ]
 
 gpt3_token_limit = 3200 # TODO check the actual limit
