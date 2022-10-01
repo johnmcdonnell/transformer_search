@@ -139,7 +139,7 @@ class Search extends React.Component<{}, SearchProps> {
                     variant="h1"
                     color="text.secondary"
                     sx = {{ fontFamily: 'Roboto Slab'}} >
-                    Hunch
+                    VibeCheck
                 </Typography>   
                 <Typography variant="subtitle1" color="text.secondary">
                     AI-powered semantic search, currently indexing the Marginal Revolution blog.
