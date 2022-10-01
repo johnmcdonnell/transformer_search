@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect }  from 'react'
 import './App.css';
 
 import AppBar from '@mui/material/AppBar'
@@ -25,6 +25,7 @@ const styles = {
 
 const pages = ['MR Search']
 
+
 function App() {
   const [currentSection, setCurrentSection] = React.useState<string>(pages[0])
 
@@ -40,6 +41,10 @@ function App() {
         return <Search />
     }
   }
+  
+  useEffect(() => {
+    document.title = 'VibeCheck';
+  });
 
   return (
     <div className="App" >
