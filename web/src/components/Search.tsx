@@ -29,7 +29,7 @@ class Results extends React.Component<{results: SearchProps['results']}> {
         if (this.props.results.length > 0) {
 
             return (
-                <Container sx={{margin: '2em'}}
+                <Container sx={{margin: '2em auto'}}
                 >
                     <Typography
                         variant="h3"
