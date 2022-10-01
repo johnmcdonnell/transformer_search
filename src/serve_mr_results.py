@@ -10,8 +10,8 @@ web_app = FastAPI()
 origins = [
     "http://localhost:3000",
     "https://master.djhebrb3aqcmp.amplifyapp.com",
-    "https://vibecheck.network/",
-    "https://www.vibecheck.network/"
+    "https://vibecheck.network",
+    "https://www.vibecheck.network"
 ]
 
 gpt3_token_limit = 3200 # TODO check the actual limit
@@ -55,7 +55,7 @@ def generate_query_for_gpt3(hits, query):
     """
 
     footer = f"""
-    Based on the articles, what are some insights and surprising facts about '{query}'? Respond in detail."""
+    What do these articles have to say about '{query}'? Respond in detail."""
     
     tokens_so_far = get_token_count(article_prompt, tokenizer) + get_token_count(footer, tokenizer)
     articles_so_far = 0
