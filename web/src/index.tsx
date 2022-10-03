@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 
 import reportWebVitals from './reportWebVitals';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme, responsiveFontSizes, ThemeProvider } from '@mui/material/styles';
 
 
 
@@ -12,7 +12,7 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
-const theme = createTheme({
+let theme = createTheme({
   palette: { 
     primary: {
       main: 'rgba(139,133,149,1)',
@@ -30,6 +30,8 @@ const theme = createTheme({
   },
 
 });
+
+theme = responsiveFontSizes(theme);
 
 root.render(
   <React.StrictMode>
