@@ -153,6 +153,7 @@ class Search extends React.Component<{}, SearchProps> {
                 >
                     <Input
                         placeholder="Search"
+                        disableUnderline
                         onChange={(e) => this.setSearch(e.target.value)}
                         autoFocus={true}
                         sx={{backgroundColor: 'secondary.main', m: '1em', p: '.5em', width: '60%', color: 'text.primary', 'borderRadius': '1em'}}
