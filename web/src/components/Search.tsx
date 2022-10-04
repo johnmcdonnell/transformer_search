@@ -135,16 +135,6 @@ class Search extends React.Component<{}, SearchProps> {
 
         return (
             <div>
-                <Typography
-                    variant="h1"
-                    color="text.secondary"
-                    sx = {{ fontFamily: 'Roboto Slab'}} >
-                    VibeCheck
-                </Typography>   
-                <Typography variant="subtitle1" color="text.secondary">
-                    AI-powered semantic search, currently indexing the Marginal Revolution blog.
-                </Typography>   
-
                 <form 
                     onSubmit={(e) => {
                         e.preventDefault();
@@ -153,6 +143,7 @@ class Search extends React.Component<{}, SearchProps> {
                 >
                     <Input
                         placeholder="Search"
+                        disableUnderline
                         onChange={(e) => this.setSearch(e.target.value)}
                         autoFocus={true}
                         sx={{backgroundColor: 'secondary.main', m: '1em', p: '.5em', width: '60%', color: 'text.primary', 'borderRadius': '1em'}}
