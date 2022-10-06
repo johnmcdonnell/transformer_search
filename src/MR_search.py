@@ -7,6 +7,9 @@ import torch
 #import sentence_transformers
 
 output_dir = 'output'
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
+
 
 def traverse_wp_articles_dir(root_dir):
     for root, dirs, files in os.walk(root_dir):
@@ -44,6 +47,7 @@ def article_to_dict(file_path):
             'link': link,
             'local_path': local_path
         }
+
 
 class WP_Article():
     def __init__(self, filename):
