@@ -31,20 +31,21 @@ const pages = ['Search',
 function App() {
   const [currentSection, setCurrentSection] = React.useState<string>(pages[0])
 
-  const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>, page:string) => {
+  const handleButtonClick = (event: React.MouseEvent<HTMLAnchorElement>, page:string) => {
     event.preventDefault();
-    const button: HTMLButtonElement = event.currentTarget;
+    const button: HTMLAnchorElement = event.currentTarget;
     setCurrentSection(page);
+    
   }
 
-  const getSection = (currentSection: string) => {
+  function getSection(currentSection: string) {
     switch (currentSection) {
       case 'Search':
-        return <Search />
+        return <Search />;
       case 'About':
-        return <About />
+        return <About />;
       default:
-        return <Search />
+        return <Search />;
     }
   }
   
@@ -79,7 +80,7 @@ function App() {
                     VibeCheck
           </Typography>   
           <Typography variant="subtitle1" color="text.secondary">
-              AI-powered semantic search, currently indexing the Marginal Revolution blog.
+              AI-powered semantic search, currently indexing the Marginal Revolution blog. 
           </Typography>   
 
           { getSection(currentSection)}
