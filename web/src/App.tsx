@@ -4,25 +4,10 @@ import './App.css';
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
-import { IconButton, Box, Menu, MenuItem, Button, Container} from '@mui/material'
-import MenuIcon from '@mui/icons-material/Menu'
+import { Box, Button, Container} from '@mui/material'
 
 import Search from './components/Search'
 import About from './components/About'
-
-const styles = {
-  root: {
-      flexGrow: 1,
-      flexDirection: 'row',
-  },
-  menuButton: {
-      marginRight: 2,
-  }, 
-  title: {
-      flexGrow: 1,
-      marginLeft:10
-  },
-}
 
 const pages = ['Search',
   'About']
@@ -33,9 +18,7 @@ function App() {
 
   const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>, page:string) => {
     event.preventDefault();
-    const button: HTMLButtonElement = event.currentTarget;
     setCurrentSection(page);
-    
   }
 
   function getSection(currentSection: string) {

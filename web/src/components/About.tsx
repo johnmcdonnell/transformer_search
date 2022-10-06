@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { Typography, Box, Paper, Container, List, ListItem, Link } from '@mui/material';
-import { text } from 'stream/consumers';
 
 
 class About extends React.Component {
@@ -22,7 +21,7 @@ class About extends React.Component {
                     About
                 </Typography>
                 <div style={{position: "relative", paddingBottom: "64.90384615384616%", height: "0"}}>
-                    <iframe src="https://www.loom.com/embed/e307765429db4fe38efd2fc822bb4529" frameBorder="0"  style={{position: "absolute", "top": 0, left: 0, width: "100%", height: "100%"}}>
+                    <iframe title='Demo Video' src="https://www.loom.com/embed/e307765429db4fe38efd2fc822bb4529" frameBorder="0"  style={{position: "absolute", "top": 0, left: 0, width: "100%", height: "100%"}}>
                         </iframe>
                     </div>
                 <Box sx={{ m: 2 }} />
