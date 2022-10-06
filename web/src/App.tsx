@@ -31,9 +31,9 @@ const pages = ['Search',
 function App() {
   const [currentSection, setCurrentSection] = React.useState<string>(pages[0])
 
-  const handleButtonClick = (event: React.MouseEvent<HTMLAnchorElement>, page:string) => {
+  const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>, page:string) => {
     event.preventDefault();
-    const button: HTMLAnchorElement = event.currentTarget;
+    const button: HTMLButtonElement = event.currentTarget;
     setCurrentSection(page);
     
   }
