@@ -5,6 +5,19 @@ import modal
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
+
+import sentry_sdk
+
+sentry_sdk.init(
+    dsn="https://fbd7b5f475954a32a3ed1e0577a26192@o4503938911436800.ingest.sentry.io/4503938914320384",
+
+
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    # We recommend adjusting this value in production,
+    traces_sample_rate=1.0,
+)
+
 web_app = FastAPI()
 
 origins = [
@@ -26,7 +39,7 @@ web_app.add_middleware(
 
 
 stub = modal.Stub()
-image = modal.Image.debian_slim().pip_install(["torch", "pandas", "sentence_transformers", "openai"])
+image = modal.Image.debian_slim().pip_install(["torch", "pandas", "sentence_transformers", "openai", "sentry-sdk[fastapi]"])
 
 # Identify output directory for passing into modal
 local_output_dir = os.path.join(os.getcwd(), "output")
@@ -94,6 +107,10 @@ def summarize_results(hits, query):
         return ""
     
 
+@web_app.get("/sentry-debug")
+async def trigger_error():
+    division_by_zero = 1 / 0
+
 @web_app.get("/search")
 def serve_mr_search_results(query_string):
     import pandas as pd
@@ -148,8 +165,10 @@ def serve_mr_search_results(query_string):
         mounts=[modal.Mount(local_dir=local_output_dir, remote_dir=remote_output_dir)],
         secret=modal.Secret.from_name("OpenAI"))
 def fastapi_app():
+
     return web_app
 
 
 if __name__ == "__main__":
+    
     stub.serve()
