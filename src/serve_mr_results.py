@@ -5,11 +5,12 @@ import modal
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
 web_app = FastAPI()
 
 origins = [
     "http://localhost:3000",
-    "https://master.djhebrb3aqcmp.amplifyapp.com",
     "https://vibecheck.network",
     "https://www.vibecheck.network"
 ]
@@ -28,9 +29,9 @@ web_app.add_middleware(
 stub = modal.Stub()
 image = modal.Image.debian_slim().pip_install(["torch", "pandas", "sentence_transformers", "openai"])
 
-# Identify output directory for passing into modal
-local_output_dir = os.path.join(os.getcwd(), "output")
+local_output_dir = os.path.join(os.getcwd(), "..", "output")
 remote_output_dir = "/root/output"
+remote_output_dir = local_output_dir
 
 def get_token_count(text, tokenizer):
     import numpy as np
@@ -44,7 +45,7 @@ def format_hit_for_gpt3(hit):
 def generate_query_for_gpt3(hits, query):
     import pickle
     
-    with open('output/gpt2_tokenizer.pkl', 'rb') as f:
+    with open(os.path.join(remote_output_dir, 'gpt2_tokenizer.pkl'), 'rb') as f:
         tokenizer = pickle.load(f)
     
     hits_encoded = [format_hit_for_gpt3(hit) for hit in hits]
@@ -95,7 +96,7 @@ def summarize_results(hits, query):
     
 
 @web_app.get("/search")
-def serve_mr_search_results(query_string):
+async def serve_mr_search_results(query_string):
     import pandas as pd
     import sentence_transformers
     import torch
@@ -144,12 +145,11 @@ def serve_mr_search_results(query_string):
     return {'results': hits_to_return,
             'summary': summary}
 
-@stub.asgi(image=image,
-        mounts=[modal.Mount(local_dir=local_output_dir, remote_dir=remote_output_dir)],
-        secret=modal.Secret.from_name("OpenAI"))
-def fastapi_app():
-    return web_app
+# @stub.asgi(image=image,
+#         mounts=[modal.Mount(local_dir=local_output_dir, remote_dir=remote_output_dir)],
+#         secret=modal.Secret.from_name("OpenAI"))
+# def fastapi_app():
+#     return web_app
+# 
 
 
-if __name__ == "__main__":
-    stub.serve()
