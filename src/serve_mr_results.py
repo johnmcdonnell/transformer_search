@@ -1,4 +1,5 @@
 import os
+import platform
 import logging
 import torch
 from fastapi import FastAPI, Request
@@ -24,10 +25,13 @@ web_app.add_middleware(
     allow_headers=["*"],
 )
 
+# Detect if we're running on a Mac laptop
+
 
 local_output_dir = os.path.join(os.getcwd(), "..", "output")
 remote_output_dir = "/root/output"
-remote_output_dir = local_output_dir
+if platform.system() == "Darwin":
+    remote_output_dir = local_output_dir
 
 def get_token_count(text, tokenizer):
     import numpy as np
