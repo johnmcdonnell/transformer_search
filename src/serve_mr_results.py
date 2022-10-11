@@ -1,7 +1,6 @@
 import os
 import logging
 import torch
-import modal
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -25,9 +24,6 @@ web_app.add_middleware(
     allow_headers=["*"],
 )
 
-
-stub = modal.Stub()
-image = modal.Image.debian_slim().pip_install(["torch", "pandas", "sentence_transformers", "openai"])
 
 local_output_dir = os.path.join(os.getcwd(), "..", "output")
 remote_output_dir = "/root/output"
@@ -144,12 +140,4 @@ async def serve_mr_search_results(query_string):
     
     return {'results': hits_to_return,
             'summary': summary}
-
-# @stub.asgi(image=image,
-#         mounts=[modal.Mount(local_dir=local_output_dir, remote_dir=remote_output_dir)],
-#         secret=modal.Secret.from_name("OpenAI"))
-# def fastapi_app():
-#     return web_app
-# 
-
 
