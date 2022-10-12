@@ -1,9 +1,20 @@
 import os
-import platform
-import logging
 import torch
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+
+from config import output_dir, logger, gpt3_token_limit
+
+# Set up logging
+loglevel = logging.DEBUG
+
+logger = logging.getLogger(__name__)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+ch = logging.StreamHandler()
+ch.setLevel(loglevel)
+ch.setFormatter(formatter)
+logger.addHandler(ch)
+
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
@@ -15,8 +26,6 @@ origins = [
     "https://www.vibecheck.network"
 ]
 
-gpt3_token_limit = 3200 # TODO check the actual limit
-
 web_app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -24,14 +33,6 @@ web_app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Detect if we're running on a Mac laptop
-
-
-local_output_dir = os.path.join(os.getcwd(), "..", "output")
-remote_output_dir = "/root/output"
-if platform.system() == "Darwin":
-    remote_output_dir = local_output_dir
 
 def get_token_count(text, tokenizer):
     import numpy as np
@@ -67,13 +68,13 @@ def generate_query_for_gpt3(hits, query):
             tokens_so_far += hit_token_count
             articles_so_far += 1
         elif articles_so_far == 0:
-            logging.warn("Haven't yet found an article over the token limit")
+            logger.warn("Haven't yet found an article over the token limit")
             continue
         else:
-            logging.warn(f"Articles exceeded token limit, could only include {i} articles")
+            logger.warn(f"Articles exceeded token limit, could only include {i} articles")
             break
     if articles_so_far == 0: 
-        logging.warn("None of the articles were within GPT3's token limit.")
+        logger.warn("None of the articles were within GPT3's token limit.")
         return ""
     
     article_prompt += footer
