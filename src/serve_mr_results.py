@@ -9,7 +9,7 @@ import sentence_transformers
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
-from config import on_laptop, output_dir,  gpt3_token_limit
+from config import on_laptop, output_dir, gpt3_token_limit, default_openai_model, available_openai_models
 
 # Set up logging
 if  on_laptop:
@@ -67,7 +67,7 @@ def format_hit_for_gpt3(hit):
     Tags: {hit["tags"]}
     Content: {hit["content"]}
     """
-def generate_query_for_gpt3(hits, query):
+def generate_query_for_gpt3(hits, query, query_length_limit=gpt3_token_limit):
     
     hits_encoded = [format_hit_for_gpt3(hit) for hit in hits]
     article_prompt = f"""A user queried: '{query}'
@@ -85,7 +85,7 @@ def generate_query_for_gpt3(hits, query):
     articles_so_far = 0
     for i, hit in enumerate(hits_encoded):
         hit_token_count = get_token_count(hit, tokenizer)
-        if tokens_so_far + hit_token_count < gpt3_token_limit:
+        if tokens_so_far + hit_token_count < query_length_limit:
             article_prompt += f"""{hit}"""
             tokens_so_far += hit_token_count
             articles_so_far += 1
@@ -102,15 +102,22 @@ def generate_query_for_gpt3(hits, query):
     article_prompt += footer
     return article_prompt
 
-def summarize_results(hits, query):
+def summarize_results(hits, query, openai_model):
     gpt3_temperature = 0
     
     import openai
     openai.api_key = os.getenv("OPENAI_API_KEY")
-    
-    gpt3_prompt = generate_query_for_gpt3(hits, query)
+    print(f'Using OpenAI model {openai_model}')
+    if openai_model.find('davinci') != -1:
+        gpt3_token_limit = 4096 - 512
+    else:
+        # Sometimes when debugging I don't use davinci
+        gpt3_token_limit = 2048 - 512
+ 
+    gpt3_prompt = generate_query_for_gpt3(hits, query, gpt3_token_limit)
     if gpt3_prompt:
-        response = openai.Completion.create(model="text-davinci-002", prompt=gpt3_prompt, temperature=gpt3_temperature, max_tokens=500)
+        logger.debug(f'openai_model: {openai_model}')
+        response = openai.Completion.create(model=openai_model, prompt=gpt3_prompt, temperature=gpt3_temperature, max_tokens=500)
         logger.info(response)
         
         return response['choices'][0]['text'].strip()
@@ -124,8 +131,15 @@ async def summarize_results_endpoint(request: Request):
     request_json = await request.json()
     query = request_json['query']
     hits = assets["mr_archive"].set_index('link').loc[request_json["hit_uris"]].to_dict('records')
+    if 'openai_model' in request_json:
+        assert request_json['openai_model'] in available_openai_models, f"Invalid model: {request_json['openai_model']}"
+        openai_model = request_json['openai_model']
+    else:
+        openai_model = default_openai_model
 
-    return {'summary': summarize_results(hits, query)}
+    summary = summarize_results(hits, query, openai_model)
+    print(f'Summary: {summary}')
+    return {'summary': summary}
 
 def search_mr_for_query(query, top_n_results):
     query_embedding = assets["model"].encode(query, convert_to_tensor=True)

@@ -64,7 +64,8 @@ function App() {
           </Typography>   
           <Typography variant="subtitle1" color="text.secondary">
               AI-powered semantic search, currently indexing the Marginal Revolution blog. 
-          </Typography>   
+          </Typography>
+          <Box sx={{ m: 2 }} />
 
           { getSection(currentSection)}
 
