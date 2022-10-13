@@ -1,12 +1,21 @@
 import os
+import logging
+import pickle
+import numpy as np
+import pandas as pd
 import torch
+import sentence_transformers
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
-from config import output_dir, logger, gpt3_token_limit
+from config import on_laptop, output_dir,  gpt3_token_limit
 
 # Set up logging
-loglevel = logging.DEBUG
+if  on_laptop:
+    loglevel = logging.DEBUG
+else:
+    loglevel = logging.INFO
 
 logger = logging.getLogger(__name__)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -14,7 +23,6 @@ ch = logging.StreamHandler()
 ch.setLevel(loglevel)
 ch.setFormatter(formatter)
 logger.addHandler(ch)
-
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
@@ -34,8 +42,24 @@ web_app.add_middleware(
     allow_headers=["*"],
 )
 
+assets = {}
+
+@web_app.on_event('startup')
+def load_assets():
+    logging.debug('Loading model, tokenizer, archive, cached embeddings to memory')
+    model_file = output_dir / 'MiniLM-L12-v2'
+    embedding_file = output_dir / "mr_embeddings.pt"
+    archive_file = output_dir / "mr_archive.csv"
+    tokenizer_file = output_dir / 'gpt2_tokenizer.pkl'
+
+    assets["mr_archive"] = pd.read_csv(archive_file)
+    assets["corpus_embeddings"] = torch.tensor(torch.load(embedding_file))
+    assets["model"] = sentence_transformers.SentenceTransformer(model_file)
+    with open(tokenizer_file, 'rb') as f:
+        assets["tokenizer"] = pickle.load(f)
+
+
 def get_token_count(text, tokenizer):
-    import numpy as np
     return np.sum(tokenizer(text)['attention_mask'])
 
 def format_hit_for_gpt3(hit):
@@ -44,10 +68,6 @@ def format_hit_for_gpt3(hit):
     Content: {hit["content"]}
     """
 def generate_query_for_gpt3(hits, query):
-    import pickle
-    
-    with open(os.path.join(remote_output_dir, 'gpt2_tokenizer.pkl'), 'rb') as f:
-        tokenizer = pickle.load(f)
     
     hits_encoded = [format_hit_for_gpt3(hit) for hit in hits]
     article_prompt = f"""A user queried: '{query}'
@@ -59,6 +79,8 @@ def generate_query_for_gpt3(hits, query):
     footer = f"""
     What do these articles have to say about '{query}'? Respond in detail."""
     
+    tokenizer = assets["tokenizer"]
+
     tokens_so_far = get_token_count(article_prompt, tokenizer) + get_token_count(footer, tokenizer)
     articles_so_far = 0
     for i, hit in enumerate(hits_encoded):
@@ -89,60 +111,54 @@ def summarize_results(hits, query):
     gpt3_prompt = generate_query_for_gpt3(hits, query)
     if gpt3_prompt:
         response = openai.Completion.create(model="text-davinci-002", prompt=gpt3_prompt, temperature=gpt3_temperature, max_tokens=500)
-        logging.debug(response)
+        logger.info(response)
         
         return response['choices'][0]['text'].strip()
     else:
         return ""
+
+# FastAPI endpoint that wraps summarize_results to be used with FastAPI
+@web_app.post("/summarize_results")
+async def summarize_results_endpoint(request: Request):
+    # Get javascript array hit_uris from the request
+    request_json = await request.json()
+    query = request_json['query']
+    hits = assets["mr_archive"].set_index('link').loc[request_json["hit_uris"]].to_dict('records')
+
+    return {'summary': summarize_results(hits, query)}
+
+def search_mr_for_query(query, top_n_results):
+    query_embedding = assets["model"].encode(query, convert_to_tensor=True)
+    cos_scores = sentence_transformers.util.cos_sim(query_embedding, assets["corpus_embeddings"])[0]
+    top_results = torch.topk(cos_scores, k=top_n_results)
     
+    return top_results
+
+def hit_to_json(result_number, score, hit):
+    blob = {
+        'result_number': result_number,
+        'score': score,
+        'title': hit["title"],
+        'author': hit["author"],
+        'date': hit["publish_date"],
+        'content': hit["content"],
+        'tags': hit["tags"],
+        'link': hit["link"]
+    }
+    return blob
+
 
 @web_app.get("/search")
 async def serve_mr_search_results(query_string):
-    import pandas as pd
-    import sentence_transformers
-    import torch
-
     top_n_results = 5
-
-    # Fetch assets
-    model = sentence_transformers.SentenceTransformer(os.path.join(remote_output_dir, 'MiniLM-L12-v2'))
-    embedding_file = os.path.join(remote_output_dir, "mr_embeddings.pt")
-    archive_file = os.path.join(remote_output_dir, "mr_archive.csv")
-    corpus_embeddings = torch.tensor(torch.load(embedding_file))
-    mr_archive = pd.read_csv(archive_file)
-
-    def search_mr_for_query(query, top_n_results):
-        query_embedding = model.encode(query, convert_to_tensor=True)
-        cos_scores = sentence_transformers.util.cos_sim(query_embedding, corpus_embeddings)[0]
-        top_results = torch.topk(cos_scores, k=top_n_results)
-        
-        return top_results
-
-    results = search_mr_for_query(query_string, top_n_results)
     
-    def hit_to_json(result_number, score, hit):
-        blob = {
-            'result_number': i+1,
-            'score': score,
-            'title': hit["title"],
-            'author': hit["author"],
-            'date': hit["publish_date"],
-            'content': hit["content"],
-            'tags': hit["tags"],
-            'link': hit["link"]
-        }
-        return blob
+    results = search_mr_for_query(query_string, top_n_results)
 
     hits_to_return = []
     for i in range(top_n_results):
-        hit = mr_archive.iloc[results.indices[i].item()]
+        hit = assets["mr_archive"].iloc[results.indices[i].item()]
         blob = hit_to_json(i+1, results.values[i], hit)
         hits_to_return.append(blob)
-   
-    # Using a placeholder to spare my OpenAI balance
-
-    summary = summarize_results(hits_to_return, query_string)
-    
-    return {'results': hits_to_return,
-            'summary': summary}
+       
+    return {'results': hits_to_return }
 

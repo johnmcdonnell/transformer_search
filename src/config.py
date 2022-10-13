@@ -12,7 +12,7 @@ on_laptop = platform.system() == "Darwin"
 if on_laptop:
     output_dir = (Path.cwd() / '..' / 'output').resolve()
 else:
-    output_dir = Path("/root/output")
+    output_dir = Path("/var/data/output")
 
 if not output_dir.exists():
     logger.warn(f"Output directory {output_dir} does not exist. Creating it.")
