@@ -133,9 +133,6 @@ class Search extends React.Component<{}, SearchProps> {
             .then(response => response.json())
             .then(data => this.setState({summary: data['summary'],
                                          loading_summary: false}))
-            .then(() => console.log("Summary fetched"))
-            .then(() => console.log(this.state.summary))
-            .then(() => console.log(this.state.loading_summary))
             .catch((error) => {
                 console.error('Error fetching summary:', error);
             });
