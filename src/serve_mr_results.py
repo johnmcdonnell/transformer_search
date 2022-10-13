@@ -32,12 +32,12 @@ origins = [
     "http://localhost:3000",
     "https://vibecheck.network",
     "https://www.vibecheck.network",
-    "https://search-prototype-*-vibecheck.vercel.app"  # Vercel staging
+    "https://search-prototype-.*-vibecheck.vercel.app"  # Vercel staging
 ]
 
 web_app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins_regex='|'.join([f'({origin})' for origin in origins]),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
