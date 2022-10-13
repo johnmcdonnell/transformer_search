@@ -31,7 +31,8 @@ web_app = FastAPI()
 origins = [
     "http://localhost:3000",
     "https://vibecheck.network",
-    "https://www.vibecheck.network"
+    "https://www.vibecheck.network",
+    "https://search-prototype-*-vibecheck.vercel.app/"  # Vercel staging
 ]
 
 web_app.add_middleware(
