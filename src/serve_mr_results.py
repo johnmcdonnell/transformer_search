@@ -37,7 +37,7 @@ origins = [
 
 web_app.add_middleware(
     CORSMiddleware,
-    allow_origins_regex='|'.join([f'({origin})' for origin in origins]),
+    allow_origin_regex='|'.join([f'({origin})' for origin in origins]),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
