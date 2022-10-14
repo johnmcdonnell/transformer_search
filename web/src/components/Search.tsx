@@ -119,7 +119,8 @@ class Search extends React.Component<{}, SearchProps> {
     }
 
     fetch_summary = () => {
-        this.setState({loading_summary: true})
+        this.setState({loading_summary: true,
+                       summary: ''})
         fetch(`${backend_url}/summarize_results`, {
             method: 'POST',
             headers: {
@@ -139,7 +140,9 @@ class Search extends React.Component<{}, SearchProps> {
     }
 
     fetch_hits() {
-        this.setState({'loading_hits': true}) 
+        this.setState({'loading_hits': true,
+                       'hits': [],
+                       'summary': ''})
         fetch(`${backend_url}/search?query_string=${this.state.query}`)
             .then(response => response.json())
             .then(data => this.setState({'hits': data.results, 'loading_hits': false}))
@@ -150,7 +153,7 @@ class Search extends React.Component<{}, SearchProps> {
     }
 
     componentDidUpdate(prevProps: SearchProps, prevState: SearchProps) {
-        if (prevState.hits !== this.state.hits) {
+        if (prevState.hits !== this.state.hits && this.state.hits.length > 0) {
             this.fetch_summary()
         }
       }
