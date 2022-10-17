@@ -8,8 +8,9 @@ import sentence_transformers
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+import sentry_sdk
 
-from config import on_laptop, output_dir, gpt3_token_limit, default_openai_model, available_openai_models
+from config import on_laptop, output_dir, gpt3_token_limit, default_openai_model, available_openai_models, sentry_sample_rate
 
 # Set up logging
 if  on_laptop:
@@ -23,6 +24,17 @@ ch = logging.StreamHandler()
 ch.setLevel(loglevel)
 ch.setFormatter(formatter)
 logger.addHandler(ch)
+
+
+sentry_sdk.init(
+    dsn="https://fbd7b5f475954a32a3ed1e0577a26192@o4503938911436800.ingest.sentry.io/4503938914320384",
+
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    # We recommend adjusting this value in production,
+    traces_sample_rate=sentry_sample_rate,
+)
+
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
@@ -58,6 +70,10 @@ def load_assets():
     assets["model"] = sentence_transformers.SentenceTransformer(model_file)
     with open(tokenizer_file, 'rb') as f:
         assets["tokenizer"] = pickle.load(f)
+
+@web_app.get("/sentry-debug")
+async def trigger_error():
+    division_by_zero = 1 / 0
 
 
 def get_token_count(text, tokenizer):

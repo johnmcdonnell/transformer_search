@@ -8,3 +8,4 @@ fastapi
 uvicorn[standard]
 gunicorn
 openai
+sentry-sdk[fastapi]

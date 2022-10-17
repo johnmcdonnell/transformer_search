@@ -7,6 +7,12 @@ import openai
 # Determine environment
 on_laptop = platform.system() == "Darwin"
 
+# Sentry sampling
+if on_laptop:
+    sentry_sample_rate = 1.0
+else:
+    sentry_sample_rate = 0.5
+
 # Set up output dir
 if on_laptop:
     output_dir = (Path.cwd() / '..' / 'output').resolve()
