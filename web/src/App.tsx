@@ -1,4 +1,5 @@
 import React, { useEffect }  from 'react'
+import { Helmet } from 'react-helmet';
 import './App.css';
 
 import AppBar from '@mui/material/AppBar'
@@ -36,8 +37,16 @@ function App() {
     document.title = 'VibeCheck';
   });
 
+
   return (
     <div className="App" >
+      <Helmet>
+        <meta charSet="utf-8" />
+        <title>Vibecheck</title>
+        <meta name="description" content="Indexing trusted sources and synthesizing their insights with AI summarization." />
+        <link rel="canonical" href="https://www.vibecheck.network/" />
+      </Helmet>
+
       <AppBar
           position="static"
           color="transparent"
